@@ -20,13 +20,13 @@ import {
 } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBBdI6WfOq0AHgodek1lrD6f71DbLDUErQ",
-  authDomain: "restaurant-calc-4daa2.firebaseapp.com",
-  projectId: "restaurant-calc-4daa2",
-  storageBucket: "restaurant-calc-4daa2.firebasestorage.app",
-  messagingSenderId: "650245627215",
-  appId: "1:650245627215:web:69a9b35a822723d1b5393a",
-  measurementId: "G-BG8PR431V5"
+  apiKey: "",
+  authDomain: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: "",
+  measurementId: ""
 };
 
 const app = initializeApp(firebaseConfig);
