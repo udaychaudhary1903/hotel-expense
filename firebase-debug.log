@@ -1,0 +1,104 @@
+[debug] [2026-07-05T13:13:08.236Z] ----------------------------------------------------------------------
+[debug] [2026-07-05T13:13:08.240Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\swati\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only hosting --debug
+[debug] [2026-07-05T13:13:08.240Z] CLI Version:   15.22.4
+[debug] [2026-07-05T13:13:08.240Z] Platform:      win32
+[debug] [2026-07-05T13:13:08.240Z] Node Version:  v24.18.0
+[debug] [2026-07-05T13:13:08.240Z] Detected Agent: unknown
+[debug] [2026-07-05T13:13:08.240Z] Time:          Sun Jul 05 2026 18:43:08 GMT+0530 (India Standard Time)
+[debug] [2026-07-05T13:13:08.241Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-07-05T13:13:10.167Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-07-05T13:13:10.169Z] > authorizing via signed-in user (udaychaudhary222@gmail.com)
+[debug] [2026-07-05T13:13:10.170Z] [iam] checking project restaurant-calc-4daa2 for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-07-05T13:13:10.182Z] Checked if tokens are valid: true, expires at: 1783258094898
+[debug] [2026-07-05T13:13:10.183Z] Checked if tokens are valid: true, expires at: 1783258094898
+[debug] [2026-07-05T13:13:10.186Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/restaurant-calc-4daa2:testIamPermissions [none]
+[debug] [2026-07-05T13:13:10.186Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/restaurant-calc-4daa2:testIamPermissions  x-goog-user-project=restaurant-calc-4daa2
+[debug] [2026-07-05T13:13:10.186Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/restaurant-calc-4daa2:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-07-05T13:13:11.877Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/restaurant-calc-4daa2:testIamPermissions 200
+[debug] [2026-07-05T13:13:11.878Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/restaurant-calc-4daa2:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-07-05T13:13:11.878Z] Checked if tokens are valid: true, expires at: 1783258094898
+[debug] [2026-07-05T13:13:11.879Z] Checked if tokens are valid: true, expires at: 1783258094898
+[debug] [2026-07-05T13:13:11.879Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/restaurant-calc-4daa2 [none]
+[debug] [2026-07-05T13:13:12.480Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/restaurant-calc-4daa2 200
+[debug] [2026-07-05T13:13:12.480Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/restaurant-calc-4daa2 {"projectId":"restaurant-calc-4daa2","projectNumber":"650245627215","displayName":"restaurant-calc","name":"projects/restaurant-calc-4daa2","resources":{"hostingSite":"restaurant-calc-4daa2"},"state":"ACTIVE","labels":{"firebase":"enabled"},"etag":"1_3207a560-b22c-4fd2-b62c-704573348852"}
+[info] 
+[info] === Deploying to 'restaurant-calc-4daa2'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2026-07-05T13:13:12.486Z] Checked if tokens are valid: true, expires at: 1783258094898
+[debug] [2026-07-05T13:13:12.486Z] Checked if tokens are valid: true, expires at: 1783258094898
+[debug] [2026-07-05T13:13:12.486Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/restaurant-calc-4daa2/sites/restaurant-calc-4daa2 [none]
+[debug] [2026-07-05T13:13:14.011Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/restaurant-calc-4daa2/sites/restaurant-calc-4daa2 200
+[debug] [2026-07-05T13:13:14.011Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/restaurant-calc-4daa2/sites/restaurant-calc-4daa2 {"name":"projects/restaurant-calc-4daa2/sites/restaurant-calc-4daa2","defaultUrl":"https://restaurant-calc-4daa2.web.app","type":"DEFAULT_SITE"}
+[debug] [2026-07-05T13:13:14.015Z] Checked if tokens are valid: true, expires at: 1783258094898
+[debug] [2026-07-05T13:13:14.015Z] Checked if tokens are valid: true, expires at: 1783258094898
+[debug] [2026-07-05T13:13:14.016Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/restaurant-calc-4daa2/versions [none]
+[debug] [2026-07-05T13:13:14.016Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/restaurant-calc-4daa2/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2026-07-05T13:13:15.572Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/restaurant-calc-4daa2/versions 200
+[debug] [2026-07-05T13:13:15.573Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/restaurant-calc-4daa2/versions {"name":"projects/650245627215/sites/restaurant-calc-4daa2/versions/dfb45d584d16a8a4","status":"CREATED","config":{},"labels":{"deployment-tool":"cli-firebase"}}
+[info] i  hosting[restaurant-calc-4daa2]: beginning deploy... 
+[info] i  hosting[restaurant-calc-4daa2]: found 11 files in public 
+[debug] [2026-07-05T13:13:15.587Z] [hosting] uploading with 200 concurrency
+[debug] [2026-07-05T13:13:15.590Z] Checked if tokens are valid: false, expires at: 1783258094898
+[debug] [2026-07-05T13:13:15.590Z] Checked if tokens are valid: false, expires at: 1783258094898
+[debug] [2026-07-05T13:13:15.590Z] > refreshing access token with scopes: []
+[debug] [2026-07-05T13:13:15.593Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-07-05T13:13:15.593Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-07-05T13:13:15.597Z] [hosting] hash cache [cHVibGlj] stored for 11 files
+[debug] [2026-07-05T13:13:15.598Z] [hosting][hash queue][FINAL] {"max":0,"min":0,"avg":0,"active":0,"complete":11,"success":11,"errored":0,"retried":0,"total":11,"elapsed":10}
+[debug] [2026-07-05T13:13:15.855Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-07-05T13:13:15.856Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-07-05T13:13:15.903Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/650245627215/sites/restaurant-calc-4daa2/versions/dfb45d584d16a8a4:populateFiles [none]
+[debug] [2026-07-05T13:13:15.904Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/650245627215/sites/restaurant-calc-4daa2/versions/dfb45d584d16a8a4:populateFiles {"files":{"/site.webmanifest":"9eb02a377942c2052cfb4dc0dbe5bf59c580fcf30e804487c84652ac464d2002","/service-worker.js":"831fe27b223359ca3f0e8e0ebdeb94d778f61411f372a602faf4884f12b68914","/robots.txt":"bfe106a3fb878dc83461c86818bf74fc1bdc7f28538ba613cd3e775516ce8b49","/manifest.json":"3183c3e45296d8b42bcb5f878735dc2588cb663fa2c7a9237bad105edca27df7","/logo512.png":"ce6fd8cb26b0bb863ad09eae70f43bf3fe1836c0af0f6e6695f17e362faa2ccc","/logo192.png":"4d2d3ed1e09f356858a8902d240ffc0a710d2521e3a5afe8b09fed3cb62efd32","/index.html":"fc177caab133e94f9f107879f89f91fa5dcf02de6c4c6f3579fd001c7decd4be","/favicon.svg":"8f77ab6d80c8407cd9fe4836b8af9b59b150e05a461f05ec735bda90efc3b0fa","/favicon.ico":"6068a33d116716a2b304b572d62fff4fd7fa9e498ea3f33861aab591e63af954","/favicon-96x96.png":"bbef0af65ee8458daf6b62467149b7414c5a47c38321b1eeddb9ed0398b58429","/apple-touch-icon.png":"c45739d07ea0c7a9c5739fefccf3a1850f3d907b8c4bd1c1ecc09ae4b543d05b"}}
+[debug] [2026-07-05T13:13:16.850Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/650245627215/sites/restaurant-calc-4daa2/versions/dfb45d584d16a8a4:populateFiles 200
+[debug] [2026-07-05T13:13:16.851Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/650245627215/sites/restaurant-calc-4daa2/versions/dfb45d584d16a8a4:populateFiles {"uploadUrl":"https://upload-firebasehosting.googleapis.com/upload/sites/restaurant-calc-4daa2/versions/dfb45d584d16a8a4/files"}
+[debug] [2026-07-05T13:13:16.851Z] [hosting][populate queue][FINAL] {"max":1261,"min":1261,"avg":1261,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":1261}
+[debug] [2026-07-05T13:13:16.851Z] [hosting] uploads queued: 0
+[debug] [2026-07-05T13:13:16.852Z] [hosting][upload queue][FINAL] {"max":0,"min":9999999999,"avg":0,"active":0,"complete":0,"success":0,"errored":0,"retried":0,"total":0,"elapsed":1783257196852}
+[info] i  hosting: upload complete 
+[info] +  hosting[restaurant-calc-4daa2]: file upload complete 
+[debug] [2026-07-05T13:13:16.853Z] [hosting] deploy completed after 1276ms
+[debug] [2026-07-05T13:13:16.853Z] [
+  {
+    "config": {
+      "public": "public",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ],
+      "site": "restaurant-calc-4daa2"
+    },
+    "version": "projects/650245627215/sites/restaurant-calc-4daa2/versions/dfb45d584d16a8a4"
+  }
+]
+[info] i  hosting[restaurant-calc-4daa2]: finalizing version... 
+[debug] [2026-07-05T13:13:16.855Z] Checked if tokens are valid: true, expires at: 1783260794856
+[debug] [2026-07-05T13:13:16.855Z] Checked if tokens are valid: true, expires at: 1783260794856
+[debug] [2026-07-05T13:13:16.856Z] >>> [apiv2][query] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/restaurant-calc-4daa2/versions/dfb45d584d16a8a4 updateMask=status%2Cconfig
+[debug] [2026-07-05T13:13:16.856Z] >>> [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/restaurant-calc-4daa2/versions/dfb45d584d16a8a4 {"status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]}}
+[debug] [2026-07-05T13:13:17.671Z] <<< [apiv2][status] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/restaurant-calc-4daa2/versions/dfb45d584d16a8a4 200
+[debug] [2026-07-05T13:13:17.671Z] <<< [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/restaurant-calc-4daa2/versions/dfb45d584d16a8a4 {"name":"projects/650245627215/sites/restaurant-calc-4daa2/versions/dfb45d584d16a8a4","status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2026-07-05T13:13:14.413536Z","createUser":{"email":"udaychaudhary222@gmail.com"},"finalizeTime":"2026-07-05T13:13:17.462332Z","finalizeUser":{"email":"udaychaudhary222@gmail.com"}}
+[debug] [2026-07-05T13:13:17.672Z] [hosting] finalized version for restaurant-calc-4daa2:[object Object]
+[info] +  hosting[restaurant-calc-4daa2]: version finalized 
+[info] i  hosting[restaurant-calc-4daa2]: releasing new version... 
+[debug] [2026-07-05T13:13:17.673Z] Checked if tokens are valid: true, expires at: 1783260794856
+[debug] [2026-07-05T13:13:17.673Z] Checked if tokens are valid: true, expires at: 1783260794856
+[debug] [2026-07-05T13:13:17.673Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/restaurant-calc-4daa2/channels/live/releases versionName=projects%2F650245627215%2Fsites%2Frestaurant-calc-4daa2%2Fversions%2Fdfb45d584d16a8a4
+[debug] [2026-07-05T13:13:17.673Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/restaurant-calc-4daa2/channels/live/releases {}
+[debug] [2026-07-05T13:13:18.547Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/restaurant-calc-4daa2/channels/live/releases 200
+[debug] [2026-07-05T13:13:18.547Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/restaurant-calc-4daa2/channels/live/releases {"name":"projects/650245627215/sites/restaurant-calc-4daa2/channels/live/releases/1783257197668000","version":{"name":"projects/650245627215/sites/restaurant-calc-4daa2/versions/dfb45d584d16a8a4","status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2026-07-05T13:13:14.413536Z","createUser":{"email":"udaychaudhary222@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocJF-YXmFoWtcsLNWTR_B8FXDRMsbvyMWp85X3-cBo33eFM1aQxp"},"finalizeTime":"2026-07-05T13:13:17.462332Z","finalizeUser":{"email":"udaychaudhary222@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocJF-YXmFoWtcsLNWTR_B8FXDRMsbvyMWp85X3-cBo33eFM1aQxp"}},"type":"DEPLOY","releaseTime":"2026-07-05T13:13:17.668Z","releaseUser":{"email":"udaychaudhary222@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocJF-YXmFoWtcsLNWTR_B8FXDRMsbvyMWp85X3-cBo33eFM1aQxp"}}
+[debug] [2026-07-05T13:13:18.548Z] [hosting] release: {"name":"projects/650245627215/sites/restaurant-calc-4daa2/channels/live/releases/1783257197668000","version":{"name":"projects/650245627215/sites/restaurant-calc-4daa2/versions/dfb45d584d16a8a4","status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2026-07-05T13:13:14.413536Z","createUser":{"email":"udaychaudhary222@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocJF-YXmFoWtcsLNWTR_B8FXDRMsbvyMWp85X3-cBo33eFM1aQxp"},"finalizeTime":"2026-07-05T13:13:17.462332Z","finalizeUser":{"email":"udaychaudhary222@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocJF-YXmFoWtcsLNWTR_B8FXDRMsbvyMWp85X3-cBo33eFM1aQxp"}},"type":"DEPLOY","releaseTime":"2026-07-05T13:13:17.668Z","releaseUser":{"email":"udaychaudhary222@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocJF-YXmFoWtcsLNWTR_B8FXDRMsbvyMWp85X3-cBo33eFM1aQxp"}}
+[info] +  hosting[restaurant-calc-4daa2]: release complete 
+[info] 
+[info] +  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/restaurant-calc-4daa2/overview
+[info] Hosting URL: https://restaurant-calc-4daa2.web.app
