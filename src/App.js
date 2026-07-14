@@ -313,14 +313,20 @@ function MonthlyDashboard({ history, config }) {
   const lastCashInHand = monthRecords.length > 0 ? monthRecords[monthRecords.length - 1].cashInHand : 0;
 
   const salesTotals = config.salesFields.map(field => ({
-    name: field.name,
-    total: monthRecords.reduce((s, r) => s + (r.salesValues?.[field.id] || 0), 0)
-  }));
+  name: field.name,
+  total: monthRecords.reduce((s, r) => {
+    const val = r.salesValues?.[field.id] ?? r.salesValues?.[String(field.id)] ?? 0;
+    return s + (parseFloat(val) || 0);
+  }, 0)
+}));
 
-  const expenseTotals = config.expenseFields.map(field => ({
-    name: field.name,
-    total: monthRecords.reduce((s, r) => s + (r.expenseValues?.[field.id] || 0), 0)
-  }));
+const expenseTotals = config.expenseFields.map(field => ({
+  name: field.name,
+  total: monthRecords.reduce((s, r) => {
+    const val = r.expenseValues?.[field.id] ?? r.expenseValues?.[String(field.id)] ?? 0;
+    return s + (parseFloat(val) || 0);
+  }, 0)
+}));
 
   function prevMonth() {
     if (selectedMonth === 0) { setSelectedMonth(11); setSelectedYear(y => y - 1); }
