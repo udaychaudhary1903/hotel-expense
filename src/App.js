@@ -474,14 +474,25 @@ export default function RestaurantCalc() {
   async function saveDay() {
     if (!user || !config) return;
     setSaving(true);
-    const entry = {
-      date: data.date,
-      salesValues: data.salesValues,
-      expenseValues: data.expenseValues,
-      totalSales, totalExpenses, profit,
-      prevCashInHand, cashInHand,
-      savedAt: new Date().toISOString()
-    };
+    // Convert all values to proper numbers before saving
+const cleanSalesValues = {};
+Object.keys(data.salesValues).forEach(key => {
+  cleanSalesValues[key] = Number(data.salesValues[key]) || 0;
+});
+
+const cleanExpenseValues = {};
+Object.keys(data.expenseValues).forEach(key => {
+  cleanExpenseValues[key] = Number(data.expenseValues[key]) || 0;
+});
+
+const entry = {
+  date: data.date,
+  salesValues: cleanSalesValues,
+  expenseValues: cleanExpenseValues,
+  totalSales, totalExpenses, profit,
+  prevCashInHand, cashInHand,
+  savedAt: new Date().toISOString()
+};
     try {
       await setDoc(doc(db, "users", user.uid, "records", data.date), entry);
       const newHistory = [entry, ...history.filter(h => h.date !== data.date)].sort((a, b) => b.date.localeCompare(a.date));
