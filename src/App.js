@@ -33,8 +33,9 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// ✅ Fixed: using Number() everywhere instead of parseFloat()
 function formatINR(val) {
-  const num = parseFloat(val) || 0;
+  const num = Number(val) || 0;
   return "₹" + num.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
@@ -173,17 +174,14 @@ function OnboardingScreen({ user, onComplete }) {
     if (salesFields.length >= 6) return;
     setSalesFields(f => [...f, { id: Date.now(), name: "" }]);
   }
-
   function removeSalesField(id) {
     if (salesFields.length <= 1) return;
     setSalesFields(f => f.filter(x => x.id !== id));
   }
-
   function addExpenseField() {
     if (expenseFields.length >= 6) return;
     setExpenseFields(f => [...f, { id: Date.now(), name: "" }]);
   }
-
   function removeExpenseField(id) {
     if (expenseFields.length <= 1) return;
     setExpenseFields(f => f.filter(x => x.id !== id));
@@ -191,9 +189,9 @@ function OnboardingScreen({ user, onComplete }) {
 
   async function handleSave() {
     if (!restaurantName.trim()) { alert("Please enter your restaurant name"); return; }
-    const invalidSales = salesFields.some(f => !f.name.trim());
-    const invalidExp = expenseFields.some(f => !f.name.trim());
-    if (invalidSales || invalidExp) { alert("Please fill all field names"); return; }
+    if (salesFields.some(f => !f.name.trim()) || expenseFields.some(f => !f.name.trim())) {
+      alert("Please fill all field names"); return;
+    }
     setSaving(true);
     try {
       const config = {
@@ -204,9 +202,7 @@ function OnboardingScreen({ user, onComplete }) {
       };
       await setDoc(doc(db, "users", user.uid, "config", "setup"), config);
       onComplete(config);
-    } catch (e) {
-      alert("Error saving: " + e.message);
-    }
+    } catch (e) { alert("Error saving: " + e.message); }
     setSaving(false);
   }
 
@@ -251,9 +247,7 @@ function OnboardingScreen({ user, onComplete }) {
               </div>
             ))}
             {salesFields.length < 6 && (
-              <button onClick={addSalesField} style={{ width: "100%", padding: "10px", borderRadius: 10, border: "2px dashed #c7d2fe", background: "transparent", color: "#4f46e5", fontWeight: 700, cursor: "pointer", fontSize: 14, marginTop: 4 }}>
-                + Add Field
-              </button>
+              <button onClick={addSalesField} style={{ width: "100%", padding: "10px", borderRadius: 10, border: "2px dashed #c7d2fe", background: "transparent", color: "#4f46e5", fontWeight: 700, cursor: "pointer", fontSize: 14, marginTop: 4 }}>+ Add Field</button>
             )}
             <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
               <button onClick={() => setStep(1)} style={{ flex: 1, padding: "13px", borderRadius: 12, border: "1.5px solid #e5e7eb", background: "#fff", color: "#6b7280", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>← Back</button>
@@ -277,9 +271,7 @@ function OnboardingScreen({ user, onComplete }) {
               </div>
             ))}
             {expenseFields.length < 6 && (
-              <button onClick={addExpenseField} style={{ width: "100%", padding: "10px", borderRadius: 10, border: "2px dashed #c7d2fe", background: "transparent", color: "#4f46e5", fontWeight: 700, cursor: "pointer", fontSize: 14, marginTop: 4 }}>
-                + Add Field
-              </button>
+              <button onClick={addExpenseField} style={{ width: "100%", padding: "10px", borderRadius: 10, border: "2px dashed #c7d2fe", background: "transparent", color: "#4f46e5", fontWeight: 700, cursor: "pointer", fontSize: 14, marginTop: 4 }}>+ Add Field</button>
             )}
             <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
               <button onClick={() => setStep(2)} style={{ flex: 1, padding: "13px", borderRadius: 12, border: "1.5px solid #e5e7eb", background: "#fff", color: "#6b7280", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>← Back</button>
@@ -307,16 +299,34 @@ function MonthlyDashboard({ history, config }) {
     return d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
   });
 
-  const totalSales = monthRecords.reduce((s, r) => s + (r.totalSales || 0), 0);
-  const totalExpenses = monthRecords.reduce((s, r) => s + (r.totalExpenses || 0), 0);
-  const totalProfit = monthRecords.reduce((s, r) => s + (r.profit || 0), 0);
-  const lastCashInHand = monthRecords.length > 0 ? monthRecords[monthRecords.length - 1].cashInHand : 0;
+  // ✅ Fixed: all Number() conversions
+  const totalSales = monthRecords.reduce((s, r) => s + (Number(r.totalSales) || 0), 0);
+  const totalExpenses = monthRecords.reduce((s, r) => s + (Number(r.totalExpenses) || 0), 0);
+  const totalProfit = monthRecords.reduce((s, r) => s + (Number(r.profit) || 0), 0);
+  const lastCashInHand = monthRecords.length > 0 ? Number(monthRecords[monthRecords.length - 1].cashInHand) || 0 : 0;
+
+  const salesTotals = config.salesFields.map(field => ({
+    name: field.name,
+    total: monthRecords.reduce((s, r) => {
+      const values = r.salesValues || {};
+      const key = Object.keys(values).find(k => String(k) === String(field.id));
+      return s + (key ? Number(values[key]) : 0);
+    }, 0)
+  }));
+
+  const expenseTotals = config.expenseFields.map(field => ({
+    name: field.name,
+    total: monthRecords.reduce((s, r) => {
+      const values = r.expenseValues || {};
+      const key = Object.keys(values).find(k => String(k) === String(field.id));
+      return s + (key ? Number(values[key]) : 0);
+    }, 0)
+  }));
 
   function prevMonth() {
     if (selectedMonth === 0) { setSelectedMonth(11); setSelectedYear(y => y - 1); }
     else setSelectedMonth(m => m - 1);
   }
-
   function nextMonth() {
     if (selectedMonth === 11) { setSelectedMonth(0); setSelectedYear(y => y + 1); }
     else setSelectedMonth(m => m + 1);
@@ -344,6 +354,34 @@ function MonthlyDashboard({ history, config }) {
           </div>
 
           <div style={{ background: "#fff", borderRadius: 16, padding: "18px 16px", marginBottom: 16 }}>
+            <div style={{ fontWeight: 800, fontSize: 15, color: "#1e1b4b", marginBottom: 12 }}>💳 Sales Breakdown</div>
+            {salesTotals.map((s, i) => (
+              <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid #f3f4f6" }}>
+                <span style={{ fontSize: 13, color: "#6b7280" }}>{s.name}</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: "#4f46e5" }}>{formatINR(s.total)}</span>
+              </div>
+            ))}
+            <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", borderRadius: 10, background: "rgba(79,70,229,0.08)", marginTop: 8 }}>
+              <span style={{ fontWeight: 800, color: "#312e81" }}>Total Sales</span>
+              <span style={{ fontWeight: 900, color: "#4f46e5", fontSize: 16 }}>{formatINR(totalSales)}</span>
+            </div>
+          </div>
+
+          <div style={{ background: "#fff", borderRadius: 16, padding: "18px 16px", marginBottom: 16 }}>
+            <div style={{ fontWeight: 800, fontSize: 15, color: "#1e1b4b", marginBottom: 12 }}>📤 Expense Breakdown</div>
+            {expenseTotals.map((e, i) => (
+              <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid #f3f4f6" }}>
+                <span style={{ fontSize: 13, color: "#6b7280" }}>{e.name}</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: "#b45309" }}>{formatINR(e.total)}</span>
+              </div>
+            ))}
+            <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", borderRadius: 10, background: "rgba(180,83,9,0.08)", marginTop: 8 }}>
+              <span style={{ fontWeight: 800, color: "#92400e" }}>Total Expenses</span>
+              <span style={{ fontWeight: 900, color: "#b45309", fontSize: 16 }}>{formatINR(totalExpenses)}</span>
+            </div>
+          </div>
+
+          <div style={{ background: "#fff", borderRadius: 16, padding: "18px 16px", marginBottom: 16 }}>
             <div style={{ fontWeight: 800, fontSize: 15, color: "#1e1b4b", marginBottom: 12 }}>📅 Daily Breakdown</div>
             {[...monthRecords].sort((a, b) => a.date.localeCompare(b.date)).map((r, i) => (
               <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid #f3f4f6" }}>
@@ -353,7 +391,7 @@ function MonthlyDashboard({ history, config }) {
                 <div style={{ display: "flex", gap: 12 }}>
                   <span style={{ fontSize: 12, color: "#4f46e5", fontWeight: 600 }}>{formatINR(r.totalSales)}</span>
                   <span style={{ fontSize: 12, color: "#b45309", fontWeight: 600 }}>-{formatINR(r.totalExpenses)}</span>
-                  <span style={{ fontSize: 12, fontWeight: 800, color: r.profit >= 0 ? "#16a34a" : "#dc2626" }}>{formatINR(r.profit)}</span>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: Number(r.profit) >= 0 ? "#16a34a" : "#dc2626" }}>{formatINR(r.profit)}</span>
                 </div>
               </div>
             ))}
@@ -408,45 +446,51 @@ export default function RestaurantCalc() {
         const records = snap.docs.map(d => d.data());
         setHistory(records);
         if (records.length > 0) {
-          setData(d => ({ ...d, prevCashInHand: records[0].cashInHand?.toString() || "" }));
+          setData(d => ({ ...d, prevCashInHand: String(records[0].cashInHand || 0) }));
         }
       } catch (e) { console.error(e); }
       setLoadingHistory(false);
     })();
   }, [user, config]);
 
-  const totalSales = config ? config.salesFields.reduce((s, f) => s + (parseFloat(data.salesValues[f.id]) || 0), 0) : 0;
-  const totalExpenses = config ? config.expenseFields.reduce((s, f) => s + (parseFloat(data.expenseValues[f.id]) || 0), 0) : 0;
-  const prevCashInHand = parseFloat(data.prevCashInHand) || 0;
+  // ✅ Fixed: all Number() conversions
+  const totalSales = config ? config.salesFields.reduce((s, f) => s + (Number(data.salesValues[f.id]) || 0), 0) : 0;
+  const totalExpenses = config ? config.expenseFields.reduce((s, f) => s + (Number(data.expenseValues[f.id]) || 0), 0) : 0;
+  const prevCashInHand = Number(data.prevCashInHand) || 0;
   const cashSalesField = config?.salesFields.find(f => f.name.toLowerCase().includes("cash"));
   const cashExpField = config?.expenseFields.find(f => f.name.toLowerCase().includes("cash"));
-  const cashSalesVal = cashSalesField ? (parseFloat(data.salesValues[cashSalesField.id]) || 0) : 0;
-  const cashExpVal = cashExpField ? (parseFloat(data.expenseValues[cashExpField.id]) || 0) : 0;
+  const cashSalesVal = cashSalesField ? (Number(data.salesValues[cashSalesField.id]) || 0) : 0;
+  const cashExpVal = cashExpField ? (Number(data.expenseValues[cashExpField.id]) || 0) : 0;
   const profit = totalSales - totalExpenses;
   const cashInHand = prevCashInHand + cashSalesVal - cashExpVal;
 
   async function saveDay() {
     if (!user || !config) return;
     setSaving(true);
-    // Convert all values to proper numbers before saving
-const cleanSalesValues = {};
-Object.keys(data.salesValues).forEach(key => {
-  cleanSalesValues[key] = Number(data.salesValues[key]) || 0;
-});
 
-const cleanExpenseValues = {};
-Object.keys(data.expenseValues).forEach(key => {
-  cleanExpenseValues[key] = Number(data.expenseValues[key]) || 0;
-});
+    // ✅ Fixed: force all values to Number before saving to Firestore
+    const cleanSalesValues = {};
+    Object.keys(data.salesValues).forEach(key => {
+      cleanSalesValues[key] = Number(data.salesValues[key]) || 0;
+    });
 
-const entry = {
-  date: data.date,
-  salesValues: cleanSalesValues,
-  expenseValues: cleanExpenseValues,
-  totalSales, totalExpenses, profit,
-  prevCashInHand, cashInHand,
-  savedAt: new Date().toISOString()
-};
+    const cleanExpenseValues = {};
+    Object.keys(data.expenseValues).forEach(key => {
+      cleanExpenseValues[key] = Number(data.expenseValues[key]) || 0;
+    });
+
+    const entry = {
+      date: data.date,
+      salesValues: cleanSalesValues,
+      expenseValues: cleanExpenseValues,
+      totalSales: Number(totalSales),
+      totalExpenses: Number(totalExpenses),
+      profit: Number(profit),
+      prevCashInHand: Number(prevCashInHand),
+      cashInHand: Number(cashInHand),
+      savedAt: new Date().toISOString()
+    };
+
     try {
       await setDoc(doc(db, "users", user.uid, "records", data.date), entry);
       const newHistory = [entry, ...history.filter(h => h.date !== data.date)].sort((a, b) => b.date.localeCompare(a.date));
@@ -455,13 +499,18 @@ const entry = {
       setTimeout(() => setSaved(false), 2000);
       const nextDate = new Date(data.date);
       nextDate.setDate(nextDate.getDate() + 1);
-      setData({ date: nextDate.toISOString().split("T")[0], salesValues: {}, expenseValues: {}, prevCashInHand: cashInHand.toString() });
+      setData({ date: nextDate.toISOString().split("T")[0], salesValues: {}, expenseValues: {}, prevCashInHand: String(cashInHand) });
     } catch (e) { alert("Error saving: " + e.message); }
     setSaving(false);
   }
 
   function loadEntry(entry) {
-    setData({ date: entry.date, salesValues: entry.salesValues || {}, expenseValues: entry.expenseValues || {}, prevCashInHand: entry.prevCashInHand?.toString() || "" });
+    setData({
+      date: entry.date,
+      salesValues: entry.salesValues || {},
+      expenseValues: entry.expenseValues || {},
+      prevCashInHand: String(entry.prevCashInHand || 0)
+    });
     setView("today");
   }
 
@@ -478,8 +527,8 @@ const entry = {
     const baseDate = history.length > 0 ? history[0].date : data.date;
     const next = new Date(baseDate);
     next.setDate(next.getDate() + 1);
-    const latestCash = history.length > 0 ? history[0].cashInHand : 0;
-    setData({ date: next.toISOString().split("T")[0], salesValues: {}, expenseValues: {}, prevCashInHand: latestCash?.toString() || "" });
+    const latestCash = history.length > 0 ? Number(history[0].cashInHand) || 0 : 0;
+    setData({ date: next.toISOString().split("T")[0], salesValues: {}, expenseValues: {}, prevCashInHand: String(latestCash) });
   }
 
   const profitColor = profit >= 0 ? "#16a34a" : "#dc2626";
@@ -616,8 +665,8 @@ const entry = {
                   <span style={{ fontWeight: 800, color: "#1e1b4b", fontSize: 15 }}>
                     {new Date(entry.date + "T00:00:00").toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short", year: "numeric" })}
                   </span>
-                  <span style={{ fontWeight: 800, fontSize: 13, padding: "3px 10px", borderRadius: 20, background: entry.profit >= 0 ? "#dcfce7" : "#fee2e2", color: entry.profit >= 0 ? "#15803d" : "#dc2626" }}>
-                    {entry.profit >= 0 ? "▲" : "▼"} {formatINR(Math.abs(entry.profit))}
+                  <span style={{ fontWeight: 800, fontSize: 13, padding: "3px 10px", borderRadius: 20, background: Number(entry.profit) >= 0 ? "#dcfce7" : "#fee2e2", color: Number(entry.profit) >= 0 ? "#15803d" : "#dc2626" }}>
+                    {Number(entry.profit) >= 0 ? "▲" : "▼"} {formatINR(Math.abs(Number(entry.profit)))}
                   </span>
                 </div>
                 <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
