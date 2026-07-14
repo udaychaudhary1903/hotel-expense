@@ -315,16 +315,18 @@ function MonthlyDashboard({ history, config }) {
   const salesTotals = config.salesFields.map(field => ({
   name: field.name,
   total: monthRecords.reduce((s, r) => {
-    const val = r.salesValues?.[field.id] ?? r.salesValues?.[String(field.id)] ?? 0;
-    return s + (parseFloat(val) || 0);
+    const values = r.salesValues || {};
+    const key = Object.keys(values).find(k => String(k) === String(field.id));
+    return s + (key ? Number(values[key]) : 0);
   }, 0)
 }));
 
 const expenseTotals = config.expenseFields.map(field => ({
   name: field.name,
   total: monthRecords.reduce((s, r) => {
-    const val = r.expenseValues?.[field.id] ?? r.expenseValues?.[String(field.id)] ?? 0;
-    return s + (parseFloat(val) || 0);
+    const values = r.expenseValues || {};
+    const key = Object.keys(values).find(k => String(k) === String(field.id));
+    return s + (key ? Number(values[key]) : 0);
   }, 0)
 }));
 
