@@ -72,7 +72,7 @@ function AmountInput({ value, onChange, placeholder }) {
       <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#9ca3af", fontWeight: 700, fontSize: 15 }}>₹</span>
       <input
         type="number" value={value} placeholder={placeholder}
-        onChange={e => onChange(e.target.value)}
+        onChange={e => onChange(Number(e.target.value) || 0)}
         style={{ width: "100%", padding: "10px 10px 10px 26px", borderRadius: 10, border: "1.5px solid #e5e7eb", fontSize: 15, fontWeight: 600, color: "#1e1b4b", background: "#fafafa", boxSizing: "border-box" }}
       />
     </div>
@@ -312,7 +312,7 @@ function MonthlyDashboard({ history, config }) {
   const totalProfit = monthRecords.reduce((s, r) => s + (r.profit || 0), 0);
   const lastCashInHand = monthRecords.length > 0 ? monthRecords[monthRecords.length - 1].cashInHand : 0;
 
-  const salesTotals = config.salesFields.map(field => ({
+ const salesTotals = config.salesFields.map(field => ({
   name: field.name,
   total: monthRecords.reduce((s, r) => {
     const values = r.salesValues || {};
