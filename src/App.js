@@ -523,6 +523,34 @@ export default function RestaurantCalc() {
     } catch (err) { alert("Error deleting: " + err.message); }
   }
 
+  async function migrateAllRecords() {
+  if (!window.confirm("Fix all old records? This will re-save all history with correct number values.")) return;
+  let count = 0;
+  for (const record of history) {
+    const cleanSales = {};
+    Object.keys(record.salesValues || {}).forEach(k => {
+      cleanSales[k] = Number(record.salesValues[k]) || 0;
+    });
+    const cleanExpenses = {};
+    Object.keys(record.expenseValues || {}).forEach(k => {
+      cleanExpenses[k] = Number(record.expenseValues[k]) || 0;
+    });
+    const fixed = {
+      ...record,
+      salesValues: cleanSales,
+      expenseValues: cleanExpenses,
+      totalSales: Number(record.totalSales) || 0,
+      totalExpenses: Number(record.totalExpenses) || 0,
+      profit: Number(record.profit) || 0,
+      prevCashInHand: Number(record.prevCashInHand) || 0,
+      cashInHand: Number(record.cashInHand) || 0,
+    };
+    await setDoc(doc(db, "users", user.uid, "records", record.date), fixed);
+    count++;
+  }
+  alert(`✅ Fixed ${count} records! Please refresh the page.`);
+}
+
   function newDay() {
     const baseDate = history.length > 0 ? history[0].date : data.date;
     const next = new Date(baseDate);
@@ -655,6 +683,17 @@ export default function RestaurantCalc() {
         {view === "history" && (
           <div>
             <div style={{ color: "#fff", fontWeight: 700, fontSize: 16, marginBottom: 14 }}>📅 Past Records ({history.length})</div>
+            {view === "history" && (
+  <div>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+      <div style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>📅 Past Records ({history.length})</div>
+      <button onClick={migrateAllRecords} style={{
+        padding: "8px 14px", borderRadius: 20, border: "none",
+        background: "#f59e0b", color: "#fff",
+        fontWeight: 700, fontSize: 12, cursor: "pointer"
+      }}>🔧 Fix Old Records</button>
+    </div>
+    {/* rest of history... */}
             {loadingHistory && <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 14, padding: "30px 20px", textAlign: "center", color: "rgba(255,255,255,0.7)" }}>Loading...</div>}
             {!loadingHistory && history.length === 0 && <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 14, padding: "30px 20px", textAlign: "center", color: "rgba(255,255,255,0.6)" }}>No records saved yet!</div>}
             {history.map((entry, i) => (
