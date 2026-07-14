@@ -33,7 +33,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ✅ Fixed: using Number() everywhere instead of parseFloat()
 function formatINR(val) {
   const num = Number(val) || 0;
   return "₹" + num.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -299,7 +298,6 @@ function MonthlyDashboard({ history, config }) {
     return d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
   });
 
-  // ✅ Fixed: all Number() conversions
   const totalSales = monthRecords.reduce((s, r) => s + (Number(r.totalSales) || 0), 0);
   const totalExpenses = monthRecords.reduce((s, r) => s + (Number(r.totalExpenses) || 0), 0);
   const totalProfit = monthRecords.reduce((s, r) => s + (Number(r.profit) || 0), 0);
@@ -418,6 +416,7 @@ export default function RestaurantCalc() {
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  const [migrating, setMigrating] = useState(false);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => { setUser(u); setAuthLoading(false); });
@@ -446,14 +445,13 @@ export default function RestaurantCalc() {
         const records = snap.docs.map(d => d.data());
         setHistory(records);
         if (records.length > 0) {
-          setData(d => ({ ...d, prevCashInHand: String(records[0].cashInHand || 0) }));
+          setData(d => ({ ...d, prevCashInHand: String(Number(records[0].cashInHand) || 0) }));
         }
       } catch (e) { console.error(e); }
       setLoadingHistory(false);
     })();
   }, [user, config]);
 
-  // ✅ Fixed: all Number() conversions
   const totalSales = config ? config.salesFields.reduce((s, f) => s + (Number(data.salesValues[f.id]) || 0), 0) : 0;
   const totalExpenses = config ? config.expenseFields.reduce((s, f) => s + (Number(data.expenseValues[f.id]) || 0), 0) : 0;
   const prevCashInHand = Number(data.prevCashInHand) || 0;
@@ -468,7 +466,6 @@ export default function RestaurantCalc() {
     if (!user || !config) return;
     setSaving(true);
 
-    // ✅ Fixed: force all values to Number before saving to Firestore
     const cleanSalesValues = {};
     Object.keys(data.salesValues).forEach(key => {
       cleanSalesValues[key] = Number(data.salesValues[key]) || 0;
@@ -509,7 +506,7 @@ export default function RestaurantCalc() {
       date: entry.date,
       salesValues: entry.salesValues || {},
       expenseValues: entry.expenseValues || {},
-      prevCashInHand: String(entry.prevCashInHand || 0)
+      prevCashInHand: String(Number(entry.prevCashInHand) || 0)
     });
     setView("today");
   }
@@ -524,32 +521,43 @@ export default function RestaurantCalc() {
   }
 
   async function migrateAllRecords() {
-  if (!window.confirm("Fix all old records? This will re-save all history with correct number values.")) return;
-  let count = 0;
-  for (const record of history) {
-    const cleanSales = {};
-    Object.keys(record.salesValues || {}).forEach(k => {
-      cleanSales[k] = Number(record.salesValues[k]) || 0;
-    });
-    const cleanExpenses = {};
-    Object.keys(record.expenseValues || {}).forEach(k => {
-      cleanExpenses[k] = Number(record.expenseValues[k]) || 0;
-    });
-    const fixed = {
-      ...record,
-      salesValues: cleanSales,
-      expenseValues: cleanExpenses,
-      totalSales: Number(record.totalSales) || 0,
-      totalExpenses: Number(record.totalExpenses) || 0,
-      profit: Number(record.profit) || 0,
-      prevCashInHand: Number(record.prevCashInHand) || 0,
-      cashInHand: Number(record.cashInHand) || 0,
-    };
-    await setDoc(doc(db, "users", user.uid, "records", record.date), fixed);
-    count++;
+    if (!window.confirm(`Fix all ${history.length} old records? This converts all values to proper numbers.`)) return;
+    setMigrating(true);
+    try {
+      let count = 0;
+      for (const record of history) {
+        const cleanSales = {};
+        Object.keys(record.salesValues || {}).forEach(k => {
+          cleanSales[k] = Number(record.salesValues[k]) || 0;
+        });
+        const cleanExpenses = {};
+        Object.keys(record.expenseValues || {}).forEach(k => {
+          cleanExpenses[k] = Number(record.expenseValues[k]) || 0;
+        });
+        const fixed = {
+          ...record,
+          salesValues: cleanSales,
+          expenseValues: cleanExpenses,
+          totalSales: Number(record.totalSales) || 0,
+          totalExpenses: Number(record.totalExpenses) || 0,
+          profit: Number(record.profit) || 0,
+          prevCashInHand: Number(record.prevCashInHand) || 0,
+          cashInHand: Number(record.cashInHand) || 0,
+        };
+        await setDoc(doc(db, "users", user.uid, "records", record.date), fixed);
+        count++;
+      }
+      // Reload history with fixed records
+      const q = query(collection(db, "users", user.uid, "records"), orderBy("date", "desc"));
+      const snap = await getDocs(q);
+      const records = snap.docs.map(d => d.data());
+      setHistory(records);
+      alert(`✅ Fixed ${count} records successfully! Monthly view will now show correct numbers.`);
+    } catch (e) {
+      alert("Error migrating: " + e.message);
+    }
+    setMigrating(false);
   }
-  alert(`✅ Fixed ${count} records! Please refresh the page.`);
-}
 
   function newDay() {
     const baseDate = history.length > 0 ? history[0].date : data.date;
@@ -682,20 +690,18 @@ export default function RestaurantCalc() {
         {/* HISTORY VIEW */}
         {view === "history" && (
           <div>
-            <div style={{ color: "#fff", fontWeight: 700, fontSize: 16, marginBottom: 14 }}>📅 Past Records ({history.length})</div>
-            {view === "history" && (
-  <div>
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-      <div style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>📅 Past Records ({history.length})</div>
-      <button onClick={migrateAllRecords} style={{
-        padding: "8px 14px", borderRadius: 20, border: "none",
-        background: "#f59e0b", color: "#fff",
-        fontWeight: 700, fontSize: 12, cursor: "pointer"
-      }}>🔧 Fix Old Records</button>
-    </div>
-    {/* rest of history... */}
-            {loadingHistory && <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 14, padding: "30px 20px", textAlign: "center", color: "rgba(255,255,255,0.7)" }}>Loading...</div>}
-            {!loadingHistory && history.length === 0 && <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 14, padding: "30px 20px", textAlign: "center", color: "rgba(255,255,255,0.6)" }}>No records saved yet!</div>}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+              <div style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>📅 Past Records ({history.length})</div>
+              <button onClick={migrateAllRecords} disabled={migrating} style={{ padding: "8px 14px", borderRadius: 20, border: "none", background: migrating ? "#d97706" : "#f59e0b", color: "#fff", fontWeight: 700, fontSize: 12, cursor: migrating ? "not-allowed" : "pointer" }}>
+                {migrating ? "Fixing..." : "🔧 Fix Old Records"}
+              </button>
+            </div>
+            {loadingHistory && (
+              <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 14, padding: "30px 20px", textAlign: "center", color: "rgba(255,255,255,0.7)" }}>Loading...</div>
+            )}
+            {!loadingHistory && history.length === 0 && (
+              <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 14, padding: "30px 20px", textAlign: "center", color: "rgba(255,255,255,0.6)" }}>No records saved yet!</div>
+            )}
             {history.map((entry, i) => (
               <div key={i} style={{ background: "#fff", borderRadius: 14, padding: "16px 18px", marginBottom: 12, cursor: "pointer", boxShadow: "0 2px 10px rgba(0,0,0,0.08)", transition: "transform 0.15s" }}
                 onMouseEnter={e => e.currentTarget.style.transform = "scale(1.01)"}
