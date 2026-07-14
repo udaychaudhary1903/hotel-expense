@@ -312,24 +312,6 @@ function MonthlyDashboard({ history, config }) {
   const totalProfit = monthRecords.reduce((s, r) => s + (r.profit || 0), 0);
   const lastCashInHand = monthRecords.length > 0 ? monthRecords[monthRecords.length - 1].cashInHand : 0;
 
- const salesTotals = config.salesFields.map(field => ({
-  name: field.name,
-  total: monthRecords.reduce((s, r) => {
-    const values = r.salesValues || {};
-    const key = Object.keys(values).find(k => String(k) === String(field.id));
-    return s + (key ? Number(values[key]) : 0);
-  }, 0)
-}));
-
-const expenseTotals = config.expenseFields.map(field => ({
-  name: field.name,
-  total: monthRecords.reduce((s, r) => {
-    const values = r.expenseValues || {};
-    const key = Object.keys(values).find(k => String(k) === String(field.id));
-    return s + (key ? Number(values[key]) : 0);
-  }, 0)
-}));
-
   function prevMonth() {
     if (selectedMonth === 0) { setSelectedMonth(11); setSelectedYear(y => y - 1); }
     else setSelectedMonth(m => m - 1);
@@ -359,34 +341,6 @@ const expenseTotals = config.expenseFields.map(field => ({
             <SummaryCard label="Total Expenses" value={formatINR(totalExpenses)} color="#b45309" />
             <SummaryCard label="Net Profit" value={formatINR(totalProfit)} color={totalProfit >= 0 ? "#15803d" : "#b91c1c"} sub={totalProfit >= 0 ? "This month" : "Net loss"} />
             <SummaryCard label="Cash in Hand" value={formatINR(lastCashInHand)} color="#0369a1" sub="End of month" />
-          </div>
-
-          <div style={{ background: "#fff", borderRadius: 16, padding: "18px 16px", marginBottom: 16 }}>
-            <div style={{ fontWeight: 800, fontSize: 15, color: "#1e1b4b", marginBottom: 12 }}>💳 Sales Breakdown</div>
-            {salesTotals.map((s, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid #f3f4f6" }}>
-                <span style={{ fontSize: 13, color: "#6b7280" }}>{s.name}</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: "#4f46e5" }}>{formatINR(s.total)}</span>
-              </div>
-            ))}
-            <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", borderRadius: 10, background: "rgba(79,70,229,0.08)", marginTop: 8 }}>
-              <span style={{ fontWeight: 800, color: "#312e81" }}>Total Sales</span>
-              <span style={{ fontWeight: 900, color: "#4f46e5", fontSize: 16 }}>{formatINR(totalSales)}</span>
-            </div>
-          </div>
-
-          <div style={{ background: "#fff", borderRadius: 16, padding: "18px 16px", marginBottom: 16 }}>
-            <div style={{ fontWeight: 800, fontSize: 15, color: "#1e1b4b", marginBottom: 12 }}>📤 Expense Breakdown</div>
-            {expenseTotals.map((e, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid #f3f4f6" }}>
-                <span style={{ fontSize: 13, color: "#6b7280" }}>{e.name}</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: "#b45309" }}>{formatINR(e.total)}</span>
-              </div>
-            ))}
-            <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", borderRadius: 10, background: "rgba(180,83,9,0.08)", marginTop: 8 }}>
-              <span style={{ fontWeight: 800, color: "#92400e" }}>Total Expenses</span>
-              <span style={{ fontWeight: 900, color: "#b45309", fontSize: 16 }}>{formatINR(totalExpenses)}</span>
-            </div>
           </div>
 
           <div style={{ background: "#fff", borderRadius: 16, padding: "18px 16px", marginBottom: 16 }}>
